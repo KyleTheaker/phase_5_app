@@ -8,11 +8,8 @@ class CommentsController < ApplicationController
     end
 
     def show
-        comment=  
-    end
-
-    def edit 
-
+        comment = Comment.find_by(id: params[:id])
+        render json: comment 
     end
 
     def create 
@@ -22,10 +19,6 @@ class CommentsController < ApplicationController
         else
           render json: @comment.errors
         end
-    end
-
-    def update 
-
     end
 
     def destroy
@@ -42,6 +35,6 @@ private
     end
 
     def comment_params
-        params.permit()
+        params.require(:comment).permit(:body, :user_id, :post_id)
     end
 end

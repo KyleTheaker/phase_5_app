@@ -1,10 +1,15 @@
 class UsersController < ApplicationController
-    skip_before_action :authorized, only: [:create]
+    # skip_before_action :authorized, only: [:create]
 
     def profile 
         render json: { user: UserSerializer.new(current_user) }, status: :accepted
     end
-    
+
+    def show
+      user = User.find_by(id: params[:id])
+      render json: { user: UserSerializer.new(user) }, status: :accepted
+    end
+
     def create
         @user = User.create(user_params)
         if @user.valid?
@@ -17,15 +22,14 @@ class UsersController < ApplicationController
 
       def login 
         @user = User.find_by(username: params[:username])
-        if User && @user.authenticate(params[:password])
+        if @user && @user.authenticate(params[:password])
           @token = encode_token({ user_id: @user.id })
           render json: { user: UserSerializer.new(@user), token: @token }, status: :created
         else
-          render json: { error: 'Incorrect login credentials, please try again' }, status: :not_acceptable
+          render json: { message: 'Incorrect login credentials, please try again' }, status: :not_acceptable
     
       private
       def user_params
         params.require(:user).permit(:username, :password_digest,)
       end
-end
 end
