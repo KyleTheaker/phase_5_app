@@ -7,8 +7,8 @@ class CommentsController < ApplicationController
         end
     end
 
-    def new
-        @comment = Comment.new
+    def show
+        comment=  
     end
 
     def edit 
@@ -29,7 +29,9 @@ class CommentsController < ApplicationController
     end
 
     def destroy
-        @comment.destroy 
+        comment =  Comment.find(params[:id])
+        comment.likes.destroy_all
+        comment.destroy
         render json: { notice: "Your comment has been deleted."}
     end
 

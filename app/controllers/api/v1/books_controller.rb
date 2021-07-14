@@ -4,7 +4,10 @@ class BooksController < ApplicationController
         @books = Book.all
         render json: {book: BookSerializer.new(books)} 
 # show associated data for the instance that is called
-    
+      def show 
+        @book = Book.find_by(id: params[:id])
+        render json: @book
+
       end
     def update 
         @book.update(book_params)
@@ -15,9 +18,25 @@ class BooksController < ApplicationController
         end
     end
 
+    def create 
+      @book = Book.create(book_params)
+      if @book.valid?
+        render json: @book
+      else
+        render json: {error: 'failed to create book'}
+    end
+
+    def destroy
+      book = Book.find(params[:id])
+      book.likes.destroy_all
+      book.comments.destroy_all
+      book.destroy
+      render json: { message: "Book Removed"}
+    end
+
     private
       def book_params
-        params.permit(:title, :author, :book_id)
+        params.permit(:title, :author)
       end
       def find_book
         @book = Book.find(params[:id])
